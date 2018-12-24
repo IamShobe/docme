@@ -1,6 +1,5 @@
 .idea/
 docme.egg-info/
-*.txt
 *.pyc
 *.zip
 *.ast
