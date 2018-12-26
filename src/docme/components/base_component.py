@@ -13,7 +13,7 @@ class BaseComponent(object):
 
     @cached_property
     def doc(self):
-        return "" if self._doc is None else GoogleDocstring(self._doc)
+        return "" if self._doc is None else str(GoogleDocstring(self._doc))
 
     @property
     def sub_content(self):
@@ -22,3 +22,5 @@ class BaseComponent(object):
     def add_component(self, component):
         self.sub_components.append(component)
 
+    def add_components(self, components):
+        self.sub_components.extend(components)

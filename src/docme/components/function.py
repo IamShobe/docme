@@ -1,7 +1,7 @@
 from property_manager import cached_property
 
-from utils import indent
-from base_component import BaseComponent
+from docme.components.utils import indent
+from docme.components.base_component import BaseComponent
 
 
 class Function(BaseComponent):
@@ -21,9 +21,20 @@ class Function(BaseComponent):
         return "function" if not self.is_method else "method"
 
     @property
+    def header(self):
+        if self.is_method:
+            return ""
+
+        string = "def :func:`{}`".format(self.name)
+        return """\
+{header}
+{decore}
+""".format(header=string, decore="-" * len(string))
+
+    @property
     def content(self):
         return """\
-.. py:{type}:: {func_name}({args})
+{header}.. py:{type}:: {func_name}({args})
 {doc}{sub_content}
-""".format(type=self.type, func_name=self.name, doc=self.doc,
+""".format(header=self.header, type=self.type, func_name=self.name, doc=self.doc,
            args=", ".join(self.args), sub_content=self.sub_content)

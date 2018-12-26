@@ -1,12 +1,13 @@
 from property_manager import cached_property
 
-from base_component import BaseComponent
+from docme.components.base_component import BaseComponent
 
 
 class Module(BaseComponent):
-    def __init__(self, title, doc):
+    def __init__(self, title, doc, path):
         super(Module, self).__init__(doc)
         self.title = title
+        self.path = path
 
     @cached_property
     def doc(self):
@@ -19,6 +20,10 @@ class Module(BaseComponent):
 {title_decore}
 {title}
 {title_decore}
+
+Location Path: 
+    *{path}*
+
 {doc}{sub_content}
 """.format(title=self.title, title_decore="=" * max(len(self.title), 6),
-           doc=self.doc, sub_content=self.sub_content)
+           path=self.path, doc=self.doc, sub_content=self.sub_content)

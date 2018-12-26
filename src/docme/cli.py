@@ -8,52 +8,19 @@ Usage:
 import os
 import sys
 
-import ast
-import yaml
 import docopt
 
-from components.function import Function
-from components.klass import Klass
-from components.module import Module
-from components.toctree import ToCTree
+from docme.builders.components import make_module
+from docme.builders.utils import fetch_folder_config, get_base_name, File
+from docme.components.module import Module
+from docme.components.toctree import ToCTree
+
+INDEX = "index"
+
+INDEX_FILE = "index.rst"
 
 PYTHON_EXT = '.py'
 RST_EXT = '.rst'
-
-
-def handle_cls(cls_node, cls):
-    for elem in cls_node.body:
-        if isinstance(elem, ast.FunctionDef):
-            func_name = elem.name
-            if func_name.startswith("_"):
-                continue
-
-            func_doc = ast.get_docstring(elem)
-            fn = Function(func_name, func_doc, [arg.id for arg in elem.args.args], is_method=True)
-            cls.add_component(fn)
-
-
-def handle_class(mod_node, mod):
-    for elem in mod_node.body:
-        if isinstance(elem, ast.ClassDef):
-            cls_name = elem.name
-            cls_doc = ast.get_docstring(elem)
-            cls = Klass(cls_name, cls_doc, [base.id for base in elem.bases])
-            handle_cls(elem, cls)
-            mod.add_component(cls)
-
-
-def handle_file(path):
-    with open(path) as module:
-        node = ast.parse(module.read())
-
-    doc = ast.get_docstring(node)
-
-    mod = Module(os.path.basename(path), doc)
-
-    handle_class(node, mod)
-
-    return mod
 
 
 def get_sub_indexes(path, out_dir, folder_entities):
@@ -66,7 +33,7 @@ def get_sub_indexes(path, out_dir, folder_entities):
     return files
 
 
-def get_path_doc(path, current_folder, folder_entities):
+def get_path_doc(path, folder_entities):
     files = []
     for entity in folder_entities:
         current_path = os.path.join(path, entity)
@@ -75,63 +42,77 @@ def get_path_doc(path, current_folder, folder_entities):
             if ext != PYTHON_EXT or file_name.startswith("_"):
                 continue
 
-            with open(os.path.join(current_folder, "{}.rst".format(file_name)), "w") as doc_file:
-                doc_file.write(handle_file(current_path).content)
+            mod = make_module(current_path)
+            if len(mod.sub_components) == 0:
+                continue
 
-            files.append(file_name)
+            files.append(File(module=mod, mount_path=file_name))
 
     return files
 
 
-def fetch_folder_config(path):
-    config = {}
-    if os.path.exists(os.path.join(path, "doc.yml")):
-        with open(path) as config_file:
-            config = yaml.load(config_file)
+def make_index(path, current_folder, default_title, config, files):
+    if len(files) == 0:
+        print "Skipping {!r} no files found!".format(current_folder)
+        return
 
-    return config
+    if not os.path.exists(current_folder):
+        os.makedirs(current_folder)
 
+    files = [file for file in files if file is not None]
 
-def make_index(path, default_title, config, files):
+    for file in files:
+        with open(os.path.join(current_folder, "{}.rst".format(file.mount_path)), "w") as doc_file:
+            doc_file.write(file.module.content)
+
     index_title = config.get("title", default_title)
-    index = Module(index_title, "")
+    index = Module(index_title, "", path)
     index.add_component(ToCTree(files, config.get("toctree", {})))
 
-    with open(os.path.join(path, "index.rst"), "w") as index_file:
+    with open(os.path.join(current_folder, INDEX_FILE), "w") as index_file:
         index_file.write(index.content)
+
+    base = get_base_name(current_folder)
+
+    return File(module=index, mount_path=os.path.join(base, INDEX))
 
 
 def generate_api_ref(path, out_dir):
     sys.stdout.write(".")
     folder_entities = os.listdir(path)
-    current_folder = os.path.join(out_dir, path)
-    if not os.path.exists(current_folder):
-        os.makedirs(current_folder)
 
     files = get_sub_indexes(path, out_dir, folder_entities)
-    files.extend(get_path_doc(path, current_folder, folder_entities))
+    files.extend(get_path_doc(path, folder_entities))
 
+    current_folder = os.path.join(out_dir, path)
     config = fetch_folder_config(current_folder)
-    make_index(current_folder, default_title=os.path.basename(path), config=config, files=files)
-
-    return os.path.join(os.path.basename(path), "index")
+    return make_index(path, current_folder, default_title=get_base_name(path), config=config, files=files)
 
 
-def make_doc(doc_dir, out_dir="doc", doc_files=[]):
+def api_reference(out_dir, paths):
+    files = []
+    out_dir = os.path.join(out_dir, "api_reference")
+
+    for path in paths:
+        files.append(generate_api_ref(path, out_dir))
+
+    return make_index("<root>", out_dir, default_title="Api Reference", config={"title": "Api Reference"}, files=files)
+
+
+def make_doc(doc_dirs, out_dir="doc", doc_files=[]):
     if out_dir is None:
         out_dir = "doc"
 
-    api_ref = generate_api_ref(doc_dir, out_dir)
-    config = fetch_folder_config(doc_dir)
-
-    make_index(out_dir, default_title=out_dir, config=config, files=doc_files + [api_ref])
+    api_ref = api_reference(out_dir, doc_dirs)
+    config = fetch_folder_config(".")
+    make_index("<root>", out_dir, default_title=out_dir, config=config, files=doc_files + [api_ref])
 
 
 def main():
     args = docopt.docopt(__doc__)
     doc_dir = args["<doc_dir>"]
     out_dir = args["<out_dir>"]
-    make_doc(doc_dir, out_dir)
+    make_doc([doc_dir], out_dir)
 
 if __name__ == '__main__':
     main()
