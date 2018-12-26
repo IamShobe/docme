@@ -1,15 +1,17 @@
+from property_manager import cached_property
+
 from base_component import BaseComponent
 
 
 class Module(BaseComponent):
-    def __init__(self, title, description):
-        super(Module, self).__init__()
+    def __init__(self, title, doc):
+        super(Module, self).__init__(doc)
         self.title = title
-        self.description = description
 
-    @property
+    @cached_property
     def doc(self):
-        return self.description if self.description is not None else ""
+        doc = super(Module, self).doc
+        return "\n{}\n\n".format(doc) if len(doc.strip()) > 0 else ""
 
     @property
     def content(self):
@@ -17,7 +19,6 @@ class Module(BaseComponent):
 {title_decore}
 {title}
 {title_decore}
-{doc}
-{sub_content}
+{doc}{sub_content}
 """.format(title=self.title, title_decore="=" * max(len(self.title), 6),
-           doc="\n{}\n\n".format(self.doc) if self.doc else "", sub_content=self.sub_content)
+           doc=self.doc, sub_content=self.sub_content)

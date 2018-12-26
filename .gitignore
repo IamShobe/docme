@@ -4,3 +4,5 @@ docme.egg-info/
 *.zip
 *.ast
 tests/
+dist/
+build/

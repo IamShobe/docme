@@ -4,8 +4,7 @@ __version__ = "0.1.0"
 
 requirements = [
     "docopt",
-    "yaml",
-    "ast"
+    "pyyaml",
 ]
 
 setup(
