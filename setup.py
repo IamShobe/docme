@@ -3,8 +3,7 @@ from setuptools import setup, find_packages
 __version__ = "0.3.0"
 
 requirements = [
-    "docopt",
-    "pyyaml",
+    "pyyaml"
 ]
 
 setup(

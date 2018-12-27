@@ -5,16 +5,14 @@ Usage:
 <doc_dir> - Directory of the docs.
 <out_dir> - Output directory [Default: doc].
 """
-import argparse
 import os
 import sys
+import argparse
 
-import docopt
-
-from docme.builders.components import make_module
-from docme.builders.utils import fetch_folder_config, get_base_name, File
 from docme.components.module import Module
 from docme.components.toctree import ToCTree
+from docme.builders.components import make_module
+from docme.builders.utils import fetch_folder_config, get_base_name, File
 
 INDEX = "index"
 
