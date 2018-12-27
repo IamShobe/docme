@@ -5,11 +5,11 @@ from docme.components.base_component import BaseComponent
 
 
 class Klass(BaseComponent):
-    def __init__(self, name, doc, inheritance, path):
+    def __init__(self, name, doc, inheritance, import_path):
         super(Klass, self).__init__(doc)
         self.name = name
         self.inheritance = inheritance
-        self.import_path = path.replace(".py", "").replace("/", ".") + "." + name
+        self.import_path = import_path + "." + name
 
     @cached_property
     def doc(self):
@@ -22,7 +22,7 @@ class Klass(BaseComponent):
 
     @property
     def link(self):
-        return ":class:`{}`".format(self.name)
+        return ":class:`{class_name}<{path}>`".format(class_name=self.name, path=self.import_path)
 
     @property
     def content(self):
@@ -30,15 +30,15 @@ class Klass(BaseComponent):
 {header}
 {header_decore}
 
-.. py:class:: {class_name}({inheritance})
-        
+.. py:class:: {path}({inheritance})
+            
         | **Inherits From:** 
         |   {inheritance_links}
-        | **Import Path:**
-        |   *{path}* 
     
 {doc}{sub_content}
 """.format(class_name=self.name, header=self.header, path=self.import_path,
-           header_decore="-"*max(len(self.header), 6), inheritance=", ".join(self.inheritance),
-           inheritance_links=", ".join([":class:`{kls}`".format(kls=kls) for kls in self.inheritance]),
+           header_decore="-"*max(len(self.header), 6),
+           inheritance=", ".join([base.__name__ for base in self.inheritance]),
+           inheritance_links=", ".join([":class:`{kls}<{mod}.{kls}>`".format(
+               kls=kls.__name__, mod=kls.__module__) for kls in self.inheritance]),
            doc=self.doc, sub_content=indent(self.sub_content))

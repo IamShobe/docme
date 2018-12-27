@@ -15,13 +15,9 @@ class ToCTree(BaseComponent):
         return string + "\n" if string else ""
 
     @property
-    def file_names(self):
-        return [file.mount_path for file in self.files]
-
-    @property
     def content(self):
         return """\
 .. toctree::
 {properties}
 {files}
-""".format(properties=indent(self.props), files=indent("\n".join(self.file_names)))
+""".format(properties=indent(self.props), files=indent("\n".join(self.files)))

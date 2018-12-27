@@ -5,11 +5,12 @@ from docme.components.base_component import BaseComponent
 
 
 class Function(BaseComponent):
-    def __init__(self, name, doc, args, is_method=False):
+    def __init__(self, name, doc, args, is_method=False, path=""):
         super(Function, self).__init__(doc)
         self.name = name
         self.args = args
         self.is_method = is_method
+        self.path = path + "." + self.name
 
     @cached_property
     def doc(self):
@@ -25,7 +26,7 @@ class Function(BaseComponent):
         if self.is_method:
             return ""
 
-        string = "def :func:`{}`".format(self.name)
+        string = "def :func:`{}()<{}>`".format(self.name, self.path)
         return """\
 {header}
 {decore}
@@ -36,5 +37,5 @@ class Function(BaseComponent):
         return """\
 {header}.. py:{type}:: {func_name}({args})
 {doc}{sub_content}
-""".format(header=self.header, type=self.type, func_name=self.name, doc=self.doc,
+""".format(header=self.header, type=self.type, func_name=self.path, doc=self.doc,
            args=", ".join(self.args), sub_content=self.sub_content)

@@ -1,4 +1,6 @@
 import ast
+import importlib
+import inspect
 import os
 
 from docme.components.function import Function
@@ -7,12 +9,14 @@ from docme.components.module import Module
 
 
 def make_functions(mod_node, mod):
+    import_path = mod.path.replace(".py", "").replace("/", ".")
     methods = []
     for elem in mod_node.body:
         if isinstance(elem, ast.FunctionDef):
             func_name = elem.name
             func_doc = ast.get_docstring(elem)
-            fn = Function(func_name, func_doc, [arg.id for arg in elem.args.args], is_method=False)
+            fn = Function(func_name, func_doc, [arg.id for arg in elem.args.args], is_method=False,
+                          path=import_path)
             methods.append(fn)
 
     return methods
@@ -24,19 +28,23 @@ def make_methods(cls_node, cls):
         if isinstance(elem, ast.FunctionDef):
             func_name = elem.name
             func_doc = ast.get_docstring(elem)
-            fn = Function(func_name, func_doc, [arg.id for arg in elem.args.args], is_method=True)
+            fn = Function(func_name, func_doc, [arg.id for arg in elem.args.args], is_method=True,
+                          path=cls.import_path)
             methods.append(fn)
 
     return methods
 
 
 def make_classes(mod_node, mod):
+    import_path = mod.path.replace(".py", "").replace("/", ".")
+    actual_mod = importlib.import_module(import_path)
     classes = []
     for elem in mod_node.body:
         if isinstance(elem, ast.ClassDef):
             cls_name = elem.name
             cls_doc = ast.get_docstring(elem)
-            cls = Klass(cls_name, cls_doc, [base.id for base in elem.bases], mod.path)
+            bases = getattr(actual_mod, cls_name).__bases__
+            cls = Klass(cls_name, cls_doc, bases, import_path)
             cls.add_components(make_methods(elem, cls))
             classes.append(cls)
 

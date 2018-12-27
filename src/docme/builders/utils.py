@@ -1,3 +1,4 @@
+import ast
 import os
 from collections import namedtuple
 
@@ -21,6 +22,14 @@ def get_base_name(path):
     if base == "":
         base = path
     return base.strip("/")
+
+
+def fetch_constant(node):
+    if isinstance(node, ast.Assign):
+        if len(node.targets) == 1:
+            target = node.targets[0]
+            value = node.value.n
+            return target, value
 
 
 File = namedtuple("File", ["module", "mount_path"])
