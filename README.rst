@@ -45,7 +45,7 @@ lets say your project's tree is like so:
 
 and you wish to create auto documentation of your project.
 
-simply use ``docme`` command - which is an entry point which directs to :func:`main<docme.cli.main>` function:
+simply use ``docme`` command - which is an entry point which directs to :func:``docme.cli.main`` function:
 
 .. code-block:: bash
 
