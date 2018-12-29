@@ -6,6 +6,7 @@ from .base_component import BaseComponent
 
 
 class Klass(BaseComponent):
+    """This class represents rst Class type."""
     def __init__(self, name, doc, inheritance, import_path):
         super(Klass, self).__init__(doc)
         self.name = name

@@ -6,3 +6,4 @@ docme.egg-info/
 tests/
 dist/
 build/
+doc/_build/

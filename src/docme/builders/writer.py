@@ -23,24 +23,26 @@ class DocWriter(object):
         self.external_docs = external_docs if external_docs is not None else []
 
     @classmethod
-    def generate_path_modules(cls, path):
+    def generate_path_modules(cls, dirname, path):
         """Generate given path module objects - only py files are watched.
 
         Args:
+            dirname (str): the root dirname of the docs.
             path (str): the path to generate doc from.
 
         Returns:
-            list. list of File objects.
+            list: list of File objects.
         """
         files = []
-        for entity in os.listdir(path):
-            current_path = os.path.join(path, entity)
-            if os.path.isfile(current_path):
-                file_name, ext = os.path.splitext(os.path.basename(current_path))
+        root_path = os.path.join(dirname, path)
+        for entity in os.listdir(root_path):
+            actual_path = os.path.join(root_path, entity)
+            if os.path.isfile(actual_path):
+                file_name, ext = os.path.splitext(os.path.basename(actual_path))
                 if ext != PYTHON_EXT or file_name.startswith("_"):
                     continue
 
-                mod = make_module(current_path)
+                mod = make_module(actual_path, os.path.join(path, entity))
                 if len(mod.sub_components) == 0:
                     continue
 
@@ -80,7 +82,7 @@ class DocWriter(object):
             files (list): list of file mount points to add to current index.
 
         Returns:
-            File. namedtuple contains `module` which is Module object that has the doc in it,
+            File: namedtuple contains `module` which is Module object that has the doc in it,
                 and `mount_path` where to mount the current doc relative to `path` root.
         """
         index_title = config.get("title", default_title)
@@ -100,12 +102,12 @@ class DocWriter(object):
         Args:
             path (str): the path of the related folder to make the index of.
             out_dir (str): the path of the out dir to make the index to and doc files.
-            default_title (str): incase there is no doc.yml file in the folder, this title will be chosen.
+            default_title (str): in-case there is no doc.yml file in the folder, this title will be chosen.
             config (dict): doc.yml file the configures the doc output.
             files (list): list of File objects to add to write.
 
         Returns:
-            File. namedtuple contains `module` which is Module object that has the doc in it,
+            File: namedtuple contains `module` which is Module object that has the doc in it,
                 and `mount_path` where to mount the current doc relative to `path` root.
         """
         files = [file for file in files if file is not None]
@@ -117,31 +119,33 @@ class DocWriter(object):
         return self.make_index(path, out_dir, default_title=default_title, config=config,
                                files=[file.mount_path for file in files])
 
-    def generate_root_path_reference(self, root, out_dir):
+    def generate_root_path_reference(self, dirname, root, out_dir):
         """Generate given path sub modules - only folders are watched.
 
         Note:
             this function calls in recursion to `generate_root_path_reference` method.
 
         Args:
+            dirname (str): the dirname of the given root.
             root (str): the path to generate doc from.
             out_dir (str): the path to generate doc into.
 
         Returns:
-            list. list of File objects.
+            list: list of File objects.
         """
         def generate_nested_modules(path):
             current_files = []
-            for entity in os.listdir(path):
-                current_path = os.path.join(path, entity)
-                if os.path.isdir(current_path):
-                    current_files.append(self.generate_root_path_reference(current_path, out_dir))
+            new_path = os.path.join(dirname, path)
+            for entity in os.listdir(new_path):
+                if os.path.isdir(os.path.join(new_path, entity)):
+                    current_path = os.path.join(path, entity)
+                    current_files.append(self.generate_root_path_reference(dirname, current_path, out_dir))
 
             return current_files
 
         print_("Scanning folder {!r}".format(root))
         files = generate_nested_modules(root)
-        files.extend(self.generate_path_modules(root))
+        files.extend(self.generate_path_modules(dirname, root))
 
         current_folder = os.path.join(out_dir, root)
         config = fetch_folder_config(current_folder)
@@ -156,12 +160,13 @@ class DocWriter(object):
             out_dir (str): the path to generate doc into.
 
         Returns:
-            list. list of File objects.
+            list: list of File objects.
         """
         files = []
         out_dir = os.path.join(out_dir, "api_reference")
         for path in self.to_doc_dirs:
-            files.append(self.generate_root_path_reference(path, out_dir))
+            path = path.rstrip("/")
+            files.append(self.generate_root_path_reference(os.path.dirname(path), get_base_name(path), out_dir))
 
         return self.write_files("<root>", files, out_dir,
                                 default_title="Api Reference", config={"title": "Api Reference"})
@@ -173,7 +178,7 @@ class DocWriter(object):
             out_dir (str): the path to generate doc into.
 
         Returns:
-            list. list of File objects.
+            list: list of File objects.
         """
         out_dir = out_dir if out_dir is not None else self.DEFAULT_DOC_DIR
 

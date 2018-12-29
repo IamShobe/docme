@@ -4,6 +4,7 @@ from .base_component import BaseComponent
 
 
 class ToCTree(BaseComponent):
+    """This class represents toctree of rst format."""
     def __init__(self, files, properties):
         super(ToCTree, self).__init__(doc=None)
         self.properties = properties

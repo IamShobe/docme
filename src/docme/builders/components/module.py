@@ -5,6 +5,7 @@ from .base_component import BaseComponent
 
 
 class Module(BaseComponent):
+    """This class represents a rst file."""
     def __init__(self, title, doc, path):
         super(Module, self).__init__(doc)
         self.title = title

@@ -1,9 +1,15 @@
 """
 Usage:
-    cli.py <doc_dir>... [<out_dir>]
+    docme <doc_dir>... [<out_dir>] [--extra-doc <mount_point>]
 
-<doc_dir> - Directory of the docs.
-<out_dir> - Output directory [Default: doc].
+Options:
+    <doc_dir> - Directory of the docs.
+
+    <out_dir> - Output directory [Default: doc].
+
+    --extra-doc - external doc to add to the api reference.
+
+    <mount_point> - from the doc dir, add the paths to index.rst of main.
 """
 from __future__ import absolute_import
 import argparse

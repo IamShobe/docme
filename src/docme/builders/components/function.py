@@ -6,6 +6,7 @@ from .base_component import BaseComponent
 
 
 class Function(BaseComponent):
+    """This class represents Function type of rst format."""
     def __init__(self, name, doc, args, is_method=False, path=""):
         super(Function, self).__init__(doc)
         self.name = name
