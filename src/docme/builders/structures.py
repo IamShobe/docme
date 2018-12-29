@@ -1,11 +1,11 @@
+from __future__ import absolute_import
+import os
 import ast
 import importlib
-import inspect
-import os
 
-from docme.components.function import Function
-from docme.components.klass import Klass
-from docme.components.module import Module
+from .components.klass import Klass
+from .components.module import Module
+from .components.function import Function
 
 
 def make_functions(mod_node, mod):

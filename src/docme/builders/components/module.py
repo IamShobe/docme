@@ -1,6 +1,7 @@
+from __future__ import absolute_import
 from property_manager import cached_property
 
-from docme.components.base_component import BaseComponent
+from .base_component import BaseComponent
 
 
 class Module(BaseComponent):

@@ -1,7 +1,8 @@
+from __future__ import absolute_import
 from property_manager import cached_property
 
-from docme.components.utils import indent
-from docme.components.base_component import BaseComponent
+from .utils import indent
+from .base_component import BaseComponent
 
 
 class Function(BaseComponent):

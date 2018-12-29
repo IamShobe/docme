@@ -1,5 +1,6 @@
-import ast
+from __future__ import absolute_import
 import os
+import ast
 from collections import namedtuple
 
 import yaml

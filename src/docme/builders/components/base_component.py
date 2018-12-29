@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 from property_manager import cached_property
 from sphinx.ext.napoleon.docstring import GoogleDocstring
 

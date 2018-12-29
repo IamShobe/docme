@@ -1,5 +1,6 @@
-from docme.components.utils import indent
-from docme.components.base_component import BaseComponent
+from __future__ import absolute_import
+from .utils import indent
+from .base_component import BaseComponent
 
 
 class ToCTree(BaseComponent):
