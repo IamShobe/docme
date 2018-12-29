@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-__version__ = "0.4.0"
+__version__ = "0.4.2"
 
 requirements = [
     "pyyaml"
@@ -11,6 +11,7 @@ setup(
     version=__version__,
     description="Auto documentation generating",
     long_description=open("README.rst").read(),
+    long_description_content_type="text/x-rst",
     license="MIT",
     author="Elran Shefer",
     author_email="elran777@gmail.com",

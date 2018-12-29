@@ -80,7 +80,7 @@ simply use ``docme`` command - which is an entry point which directs to :func:``
 
 now you can simply add ``make`` file and ``conf.py`` for sphinx to compile the doc to html!
 
-.. code-block:: base
+.. code-block:: bash
 
     cd doc
     make html
@@ -132,6 +132,7 @@ you can include ``how_to_start`` section like so:
 
 | In your doc you can reference classes and functions from your api!
 | like so:
+
 ::
 
     :class:`example<path.to.Class>`
