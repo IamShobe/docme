@@ -18,8 +18,9 @@ def fetch_folder_config(path):
         dict. the loaded config file.
     """
     config = {}
-    if os.path.exists(os.path.join(path, DOC_YML)):
-        with open(path) as config_file:
+    config_path = os.path.join(path, DOC_YML)
+    if os.path.exists(config_path):
+        with open(config_path) as config_file:
             config = yaml.load(config_file)
 
     return config

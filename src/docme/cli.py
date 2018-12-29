@@ -22,7 +22,7 @@ def main():
     parser.add_argument('doc_dirs', type=str, nargs='+',
                         help='Directories of the docs')
     parser.add_argument('out_dir', type=str)
-    parser.add_argument('--extra-doc', type=str, nargs='+')
+    parser.add_argument('--extra-doc', type=str, action='append')
     args = parser.parse_args()
     writer = DocWriter(args.doc_dirs, args.extra_doc)
     writer.generate(args.out_dir)

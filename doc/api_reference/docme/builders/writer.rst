@@ -13,7 +13,19 @@ class :class:`DocWriter<docme.builders.writer.DocWriter>`
         | **Inherits From:** 
         |   :class:`object<__builtin__.object>`
     
+
+        Main class for generating doc.
+
     .. py:method:: docme.builders.writer.DocWriter.__init__(self, to_doc_dirs, external_docs)
+    
+            Create instance of DocWriter.
+            
+            :param to_doc_dirs: list of paths to doc.
+            :type to_doc_dirs: list
+            :param external_docs: list of paths to add to the doc.
+            :type external_docs: list
+            
+    
     
     
     .. py:method:: docme.builders.writer.DocWriter.generate_path_modules(cls, dirname, path)

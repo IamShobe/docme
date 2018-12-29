@@ -16,9 +16,16 @@ RST_EXT = '.rst'
 
 
 class DocWriter(object):
+    """Main class for generating doc."""
     DEFAULT_DOC_DIR = "doc"
 
     def __init__(self, to_doc_dirs, external_docs=None):
+        """Create instance of DocWriter.
+
+        Args:
+            to_doc_dirs (list): list of paths to doc.
+            external_docs (list): list of paths to add to the doc.
+        """
         self.to_doc_dirs = to_doc_dirs
         self.external_docs = external_docs if external_docs is not None else []
 
@@ -148,7 +155,7 @@ class DocWriter(object):
         files.extend(self.generate_path_modules(dirname, root))
 
         current_folder = os.path.join(out_dir, root)
-        config = fetch_folder_config(current_folder)
+        config = fetch_folder_config(os.path.join(dirname, root))
         print_("Creating folder content {!r}".format(current_folder))
         return self.write_files(root, files, current_folder,
                                 default_title=get_base_name(root), config=config)
