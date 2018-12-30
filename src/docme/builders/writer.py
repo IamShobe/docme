@@ -19,18 +19,26 @@ class DocWriter(object):
     """Main class for generating doc."""
     DEFAULT_DOC_DIR = "doc"
 
-    def __init__(self, to_doc_dirs, external_docs=None):
+    def __init__(self, to_doc_dirs, external_docs=None, black_list=None):
         """Create instance of DocWriter.
 
         Args:
             to_doc_dirs (list): list of paths to doc.
             external_docs (list): list of paths to add to the doc.
+            black_list (list): list of paths to not include in the modules search.
         """
         self.to_doc_dirs = to_doc_dirs
         self.external_docs = external_docs if external_docs is not None else []
+        self.black_list = black_list if black_list is not None else []
 
-    @classmethod
-    def generate_path_modules(cls, dirname, path):
+    def is_in_blacklist(self, path):
+        for word in self.black_list:
+            if word in path:
+                return True
+
+        return False
+
+    def generate_path_modules(self, dirname, path):
         """Generate given path module objects - only py files are watched.
 
         Args:
@@ -47,6 +55,9 @@ class DocWriter(object):
             if os.path.isfile(actual_path):
                 file_name, ext = os.path.splitext(os.path.basename(actual_path))
                 if ext != PYTHON_EXT or file_name.startswith("_"):
+                    continue
+
+                if self.is_in_blacklist(actual_path):
                     continue
 
                 mod = make_module(actual_path, os.path.join(path, entity))

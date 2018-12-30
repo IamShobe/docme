@@ -16,7 +16,7 @@ class :class:`DocWriter<docme.builders.writer.DocWriter>`
 
         Main class for generating doc.
 
-    .. py:method:: docme.builders.writer.DocWriter.__init__(self, to_doc_dirs, external_docs)
+    .. py:method:: docme.builders.writer.DocWriter.__init__(self, to_doc_dirs, external_docs, black_list)
     
             Create instance of DocWriter.
             
@@ -24,11 +24,16 @@ class :class:`DocWriter<docme.builders.writer.DocWriter>`
             :type to_doc_dirs: list
             :param external_docs: list of paths to add to the doc.
             :type external_docs: list
+            :param black_list: list of paths to not include in the modules search.
+            :type black_list: list
             
     
     
     
-    .. py:method:: docme.builders.writer.DocWriter.generate_path_modules(cls, dirname, path)
+    .. py:method:: docme.builders.writer.DocWriter.is_in_blacklist(self, path)
+    
+    
+    .. py:method:: docme.builders.writer.DocWriter.generate_path_modules(self, dirname, path)
     
             Generate given path module objects - only py files are watched.
             
