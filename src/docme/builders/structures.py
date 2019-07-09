@@ -3,9 +3,15 @@ import os
 import ast
 import importlib
 
+import six
+
 from .components.klass import Klass
 from .components.module import Module
 from .components.function import Function
+
+
+def get_id(argument):
+    return argument.arg if six.PY3 else argument.id
 
 
 def make_functions(mod_node, mod):
@@ -24,7 +30,7 @@ def make_functions(mod_node, mod):
         if isinstance(elem, ast.FunctionDef):
             func_name = elem.name
             func_doc = ast.get_docstring(elem)
-            fn = Function(func_name, func_doc, [arg.id for arg in elem.args.args], is_method=False,
+            fn = Function(func_name, func_doc, [get_id(arg) for arg in elem.args.args], is_method=False,
                           path=import_path)
             methods.append(fn)
 
@@ -46,7 +52,7 @@ def make_methods(cls_node, cls):
         if isinstance(elem, ast.FunctionDef):
             func_name = elem.name
             func_doc = ast.get_docstring(elem)
-            fn = Function(func_name, func_doc, [arg.id for arg in elem.args.args], is_method=True,
+            fn = Function(func_name, func_doc, [get_id(arg) for arg in elem.args.args], is_method=True,
                           path=cls.import_path)
             methods.append(fn)
 
